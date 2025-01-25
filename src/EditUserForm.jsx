@@ -20,12 +20,12 @@ function EditUserForm() {
       `https://dummyjson.com/users/${userId}?select=firstName,lastName,email,phone,role`
     );
     console.log("user: ", user);
-    // setRecords(users?.data?.users);
+  
   };
 
   useEffect(() => {
     getUser();
-  }, []); // Empty dependency array ensures fetch runs only once
+  }, []); 
 
   const navigate = useNavigate();
 

@@ -9,6 +9,7 @@ import PostEdits from "./PostEdits";
 import PostCreate from "./postcreate";
 import Navbar from "./Navbar";
 import "./Navbar.css";
+import Login from "./login";
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
@@ -19,12 +20,14 @@ root.render(
       <Navbar />
       <Routes>
         <Route path="/" element={<Navigate to="/posts" />} />
+
         <Route path="/users" element={<App />} />
         <Route path="/create-user" element={<CreateUserForm />} />
         <Route path="/edit-user" element={<EditUserForm />} />
         <Route path="/posts" element={<PostPage />} />
         <Route path="/edit-post" element={<PostEdits />} />
         <Route path="/create-post" element={<PostCreate />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

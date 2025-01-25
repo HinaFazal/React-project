@@ -18,6 +18,11 @@ function Navbar() {
               Users
             </Link>
           </li>
+          <li className="navbar-item">
+            <Link to="/login" className="navbar-link">
+              login
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
