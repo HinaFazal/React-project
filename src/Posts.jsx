@@ -2,19 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import { customStyles } from "./utils/constants";
 
-const customStyles = {
-  headCells: {
-    style: {
-      backgroundColor: "black",
-      color: "white",
-      fontSize: "17px",
-      fontWeight: "bolder",
-    },
-  },
-};
-
-function PostPage() {
+function Posts() {
   const [records, setRecords] = useState(null);
   const [shouldUpdate, setShouldUpdate] = useState(false);
   const navigate = useNavigate();
@@ -26,7 +16,8 @@ function PostPage() {
     },
     {
       name: "Body",
-      selector: (row) => row.body,
+      selector: (row) =>
+        row.body.length > 100 ? row.body.substring(0, 100) + "..." : row.body,
     },
     {
       name: "User ID",
@@ -123,4 +114,4 @@ function PostPage() {
   );
 }
 
-export default PostPage;
+export default Posts;

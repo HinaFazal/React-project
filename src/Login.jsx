@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
+import axios from "axios";
 
 function Login() {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -20,11 +21,27 @@ function Login() {
     setFormData(data);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Details: ", formData);
+    try {
+      const response = await axios.post(
+        `https://dummyjson.com/user/login`,
+        formData
+      );
+      if (response.status == 200) {
+        const user = response.data;
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/users");
+      } else {
+        alert("User creation failed");
+      }
+    } catch (error) {
+      const errorMsg = error.response.data.message;
+      alert(errorMsg);
+      console.log("Login failed", error);
+    }
 
-    navigate("/posts");
+    // navigate("/user");
   };
 
   return (
@@ -32,14 +49,14 @@ function Login() {
       <h2 className="form-title">Login</h2>
       <form className="form" onSubmit={handleSubmit}>
         <label className="form-label">
-          Email
+          Username
           <input
             className="form-input"
-            type="email"
-            name="email"
-            value={formData.email}
+            type="text"
+            name="username"
+            value={formData.username}
             onChange={handleChange}
-            placeholder="Enter your email"
+            placeholder="Enter your username"
           />
         </label>
         <label className="form-label">

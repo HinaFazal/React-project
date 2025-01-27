@@ -1,14 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./App.css";
+import { useSearchParams } from "react-router-dom";
+import axios from "axios";
 
-function CreateUserForm() {
+function EditUser() {
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("id");
+
   const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
+    age: 0,
   });
+
+  const getUser = async () => {
+    const user = await axios.get(
+      `https://dummyjson.com/users/${userId}?select=firstName,lastName,email,phone,role,age`
+    );
+
+    setFormData({
+      firstName: user.data.firstName,
+      lastName: user.data.lastName,
+      email: user.data.email,
+      phone: user.data.phone,
+      age: user.data.age,
+    });
+    console.log("user: ", user);
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const navigate = useNavigate();
 
@@ -22,24 +46,30 @@ function CreateUserForm() {
     setFormData(data);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User Created: ", formData);
-
-    navigate("/");
+    const response = await axios.put(
+      `https://dummyjson.com/users/${userId}`,
+      formData
+    );
+    if (response.status == 200) {
+      navigate("/users");
+    } else {
+      alert("User update failed");
+    }
   };
 
   return (
     <div className="form-container">
-      <h2 className="form-title">Create User</h2>
+      <h2 className="form-title">Edit User {userId}</h2>
       <form className="form" onSubmit={handleSubmit}>
         <label className="form-label">
           First Name
           <input
             className="form-input"
             type="text"
-            name="firstname"
-            value={formData.firstname}
+            name="firstName"
+            value={formData.firstName}
             onChange={handleChange}
             placeholder="Enter your first name"
           />
@@ -49,8 +79,8 @@ function CreateUserForm() {
           <input
             className="form-input"
             type="text"
-            name="lastname"
-            value={formData.lastname}
+            name="lastName"
+            value={formData.lastName}
             onChange={handleChange}
             placeholder="Enter your last name"
           />
@@ -77,6 +107,17 @@ function CreateUserForm() {
             placeholder="Enter your phone number"
           />
         </label>
+        <label className="form-label">
+          Age
+          <input
+            className="form-input"
+            type="text"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            placeholder="Enter your age"
+          />
+        </label>
         <button className="form-button" type="submit">
           Submit
         </button>
@@ -84,4 +125,4 @@ function CreateUserForm() {
     </div>
   );
 }
-export default CreateUserForm;
+export default EditUser;

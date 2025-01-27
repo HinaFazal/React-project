@@ -1,31 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-import "./App.css";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-function EditUserForm() {
-  const [searchParams] = useSearchParams();
-  const userId = searchParams.get("id");
-
+function CreateUser() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
+    age: 0,
   });
-
-  const getUser = async () => {
-    const user = await axios.get(
-      `https://dummyjson.com/users/${userId}?select=firstName,lastName,email,phone,role`
-    );
-    console.log("user: ", user);
-  
-  };
-
-  useEffect(() => {
-    getUser();
-  }, []); 
 
   const navigate = useNavigate();
 
@@ -39,16 +23,20 @@ function EditUserForm() {
     setFormData(data);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User Created: ", formData);
 
-    navigate("/");
+    const response = await axios.post(`https://dummyjson.com/users/add`, formData);
+    if (response.status == 201) {
+      navigate("/users");
+    } else {
+      alert("User creation failed");
+    }
   };
 
   return (
     <div className="form-container">
-      <h2 className="form-title">Edit User {userId}</h2>
+      <h2 className="form-title">Create User</h2>
       <form className="form" onSubmit={handleSubmit}>
         <label className="form-label">
           First Name
@@ -94,6 +82,17 @@ function EditUserForm() {
             placeholder="Enter your phone number"
           />
         </label>
+        <label className="form-label">
+          Age
+          <input
+            className="form-input"
+            type="number"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            placeholder="Enter your age"
+          />
+        </label>
         <button className="form-button" type="submit">
           Submit
         </button>
@@ -101,4 +100,4 @@ function EditUserForm() {
     </div>
   );
 }
-export default EditUserForm;
+export default CreateUser;

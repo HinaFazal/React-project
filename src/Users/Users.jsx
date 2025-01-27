@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { data } from "./assets/data";
+import { data } from "../assets/data";
 import axios from "axios";
 import DataTable from "react-data-table-component";
+import { customStyles } from "../utils/constants";
 
-const customStyles = {
-  headCells: {
-    style: {
-      backgroundColor: "black",
-      color: "white",
-      fontSize: "17px",
-      fontWeight: "bolder",
-    },
-  },
-};
-
-function App() {
+function Users() {
   const [records, setRecords] = useState(null);
   const [shouldUpdate, setShouldUpdate] = useState(false);
   const navigate = useNavigate();
@@ -52,7 +42,7 @@ function App() {
       cell: (row) => (
         <div>
           <button className="editBtn Btn" onClick={() => handleEdit(row.id)}>
-            edit
+            Edit
           </button>
           <button
             className="deleteBtn Btn"
@@ -73,7 +63,6 @@ function App() {
       setShouldUpdate(true);
       alert(`User ${userId} deleted Successfully`);
     }
-    console.log("resp: ", response);
   };
 
   const handleEdit = (userId) => {
@@ -89,10 +78,29 @@ function App() {
   };
 
   const getUsers = async () => {
-    const users = await axios.get(
-      "https://dummyjson.com/users?select=firstName,lastName,email,phone,role,hair"
-    );
-    setRecords(users?.data?.users);
+    try {
+      const loggedInUser = JSON.parse(localStorage.getItem("user"));
+      if (!loggedInUser) {
+        navigate("/login");
+        return;
+      }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${loggedInUser.accessToken}`,
+        },
+      };
+      const users = await axios.get(
+        "https://dummyjson.com/auth/users?select=firstName,lastName,email,phone,role,hair",
+        config
+      );
+      setRecords(users?.data?.users);
+    } catch (error) {
+      if (error.response.status === 401) {
+        localStorage.removeItem("user");
+        navigate("/login");
+      }
+      console.log("Error fetching users", error);
+    }
   };
 
   useEffect(() => {
@@ -129,4 +137,4 @@ function App() {
     </div>
   );
 }
-export default App;
+export default Users;
