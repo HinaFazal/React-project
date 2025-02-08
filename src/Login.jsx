@@ -20,28 +20,25 @@ function Login() {
     };
     setFormData(data);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `https://dummyjson.com/user/login`,
+        `https://dummyjson.com/auth/login`,
         formData
       );
-      if (response.status == 200) {
+
+      if (response.status === 200) {
         const user = response.data;
         localStorage.setItem("user", JSON.stringify(user));
+        alert("Login successful!");
         navigate("/users");
-      } else {
-        alert("User creation failed");
       }
     } catch (error) {
-      const errorMsg = error.response.data.message;
+      const errorMsg = error.response?.data?.message || "Login failed!";
       alert(errorMsg);
-      console.log("Login failed", error);
+      console.error("Login error:", error);
     }
-
-    // navigate("/user");
   };
 
   return (

@@ -4,13 +4,14 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Users from "./Users/Users";
 import CreateUser from "./Users/CreateUser";
 import EditUser from "./Users/EditUser";
-import PostPage from "./Posts";
-import PostEdits from "./PostEdits";
-import PostCreate from "./postcreate";
+import Posts from "./Posts/Posts";
+import Editpost from "./Posts/Editpost";
+import CreatePost from "./Posts/createpost";
 import Navbar from "./Navbar";
 import "./Navbar.css";
 import "./App.css";
 import Login from "./login";
+
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
@@ -25,9 +26,10 @@ root.render(
         <Route path="/users" element={<Users />} />
         <Route path="/create-user" element={<CreateUser />} />
         <Route path="/edit-user" element={<EditUser />} />
-        <Route path="/posts" element={<PostPage />} />
-        <Route path="/edit-post" element={<PostEdits />} />
-        <Route path="/create-post" element={<PostCreate />} />
+        <Route path="/posts" element={<Posts />} />
+        <Route path="/edit-post" element={<Editpost />} />
+        <Route path="/create-post" element={<CreatePost />} />
+
         <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>

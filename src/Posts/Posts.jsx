@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DataTable from "react-data-table-component";
-import { customStyles } from "./utils/constants";
+import { customStyles } from "../utils/constants";
 
 function Posts() {
   const [records, setRecords] = useState(null);
@@ -16,8 +16,7 @@ function Posts() {
     },
     {
       name: "Body",
-      selector: (row) =>
-        row.body.length > 100 ? row.body.substring(0, 100) + "..." : row.body,
+      selector: (row) => row.body,
     },
     {
       name: "User ID",
@@ -25,6 +24,7 @@ function Posts() {
     },
     {
       name: "Action",
+      selector: (row) => row.action,
       cell: (row) => (
         <div>
           <button className="editBtn Btn" onClick={() => handleEdit(row.id)}>
@@ -42,17 +42,12 @@ function Posts() {
   ];
 
   const handleDelete = async (postId) => {
-    try {
-      const response = await axios.delete(
-        `https://dummyjson.com/posts/${postId}`
-      );
-      if (response.status === 200) {
-        setShouldUpdate(true);
-        alert(`Post ${postId} deleted successfully`);
-      }
-    } catch (error) {
-      console.error("Error deleting post:", error);
-      alert("Failed to delete the post. Please try again.");
+    const response = await axios.delete(
+      `https://dummyjson.com/posts/${postId}`
+    );
+    if (response.status === 200) {
+      setShouldUpdate(true);
+      alert(`Post ${postId} deleted Successfully`);
     }
   };
 
@@ -60,21 +55,29 @@ function Posts() {
     navigate(`/edit-post?id=${postId}`);
   };
 
-  const handleChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    const filteredRecords = records.filter((item) =>
-      item.title.toLowerCase().includes(query)
-    );
-    setRecords(filteredRecords);
-  };
-
   const getPosts = async () => {
     try {
-      const response = await axios.get("https://dummyjson.com/posts");
-      setRecords(response.data.posts);
+      const loggedInUser = JSON.parse(localStorage.getItem("user"));
+      if (!loggedInUser) {
+        navigate("/login");
+        return;
+      }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${loggedInUser.accessToken}`,
+        },
+      };
+      const posts = await axios.get(
+        "https://dummyjson.com/auth//posts ",
+        config
+      );
+      setRecords(posts?.data?.posts);
     } catch (error) {
-      console.error("Error fetching posts:", error);
-      alert("Failed to fetch data. Please try again later.");
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem("user");
+        navigate("/posts");
+      }
+      console.log("Error fetching posts", error);
     }
   };
 
@@ -85,16 +88,10 @@ function Posts() {
   const handleCreatePost = () => {
     navigate("/create-post");
   };
-
   return (
     <div className="homeDiv">
       <div className="search">
         <h2>Posts List</h2>
-        <input
-          type="text"
-          placeholder="Search by title"
-          onChange={handleChange}
-        />
         <button className="createBtn Btn" onClick={handleCreatePost}>
           Create Post
         </button>
@@ -104,14 +101,11 @@ function Posts() {
           columns={columns}
           data={records}
           customStyles={customStyles}
-          // pagination
-          responsive
         />
       ) : (
-        "Loading..."
+        "loading..."
       )}
     </div>
   );
 }
-
 export default Posts;

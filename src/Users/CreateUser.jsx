@@ -26,7 +26,10 @@ function CreateUser() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await axios.post(`https://dummyjson.com/users/add`, formData);
+    const response = await axios.post(
+      `https://dummyjson.com/users/add`,
+      formData
+    );
     if (response.status == 201) {
       navigate("/users");
     } else {
